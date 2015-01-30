@@ -1,5 +1,7 @@
 # wechat
 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/QinAIns/wechat?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 一个基于Clojure语言的微信开发库
 
 ## Usage
