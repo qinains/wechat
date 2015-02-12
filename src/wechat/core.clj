@@ -29,7 +29,7 @@
 (defn access-token []
   "获取access-token"
   (let [now (System/currentTimeMillis)
-        access-token (:access-tok--fdasdfaen @cached)]
+        access-token (:access-token @cached)]
     (if (or (< (:access-token-expire-time @cached) now)
             (nil? access-token))
       (let [access-token (get (-> (str "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" (:appid @cached) "&secret=" (:appsecret @cached)) slurp json/parse-string) "access_token")]
@@ -52,9 +52,10 @@
   "根据jsapi-ticket、noncestr、timestamp、url获取jsapi签名"
   (sha1 (str "jsapi_ticket=" jsapi-ticket "&noncestr=" noncestr "&timestamp=" timestamp "&url=" (get (str/split url #"#") 0))))
 
-(defn sign-package [url]
-  "根据url生成签名包"
-  (let [noncestr (.toString (UUID/randomUUID))
+(defn sign-package [x]
+  "根据url生成签名包,x可以是str或者request"
+  (let [url (if (map? x) (str (name (:scheme x)) "://" (name (:server-name x)) (if (not= 80 (:server-port x)) (str ":" (:server-port x))) (:uri x) (if (not= nil (:query-string x)) (str "?" (:query-string x)))) x)
+        noncestr (.toString (UUID/randomUUID))
         timestamp (Long/toString (/ (System/currentTimeMillis) 1000))
         signature (jsapi-signature (jsapi-ticket) noncestr timestamp url)]
     {:appid (:appid @cached)
